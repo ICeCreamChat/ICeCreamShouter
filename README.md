@@ -2,7 +2,7 @@
 
 ICeCream Shouter 是面向学校使用的云端远程喊话系统。教师用手机或电脑浏览器登录，在校内外都能向指定班级发送文字或教师原声；教室里的 Windows 电脑按“普通、重要、紧急”显示不同提醒。正式环境推荐部署到国内腾讯云服务器，Cloudflare 版本保留为可选方案。
 
-本项目由 ICeCreamChat 维护，是基于 [OpenRemoteShouter](https://github.com/YU322142/OpenRemoteShouter) 产品构想进行大幅重构和二次开发的云端版本。云端架构、账号与权限、服务器中继、数据库、自动更新、教师网页和 Windows 教室端均围绕学校实际使用场景重新设计。第三方来源与许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+本项目由 ICeCreamChat 维护，云端架构、账号与权限、服务器中继、数据库、自动更新、教师网页和 Windows 教室端均围绕学校实际使用场景重新设计。
 
 ## 已实现功能
 
@@ -59,4 +59,4 @@ dotnet build Receiver\Receiver.csproj -c Release
 
 ## 许可与说明
 
-ICeCreamChat 对本项目新增和修改的代码采用仓库根目录的 MIT 许可证。项目所包含或衍生自第三方开源项目的部分，继续遵循 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 中列出的原始许可。腾讯云国内版的喊话内容及账号数据只存储在你自己的腾讯云服务器中；Cloudflare 可选版的数据存储在你自己的 Cloudflare 账户中。
+ICeCreamChat 对本项目新增和修改的代码采用仓库根目录的 MIT 许可证，项目所包含或衍生自第三方开源项目的部分。腾讯云国内版的喊话内容及账号数据只存储在你自己的腾讯云服务器中；Cloudflare 可选版的数据存储在你自己的 Cloudflare 账户中。
