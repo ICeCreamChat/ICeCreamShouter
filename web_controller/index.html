@@ -1,0 +1,1300 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f5f5f7">
+  <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+  <title>ICeCream Shouter</title>
+  <style nonce="__CSP_NONCE__">
+    :root {
+      color-scheme: light;
+      --bg: #f5f5f7;
+      --surface: rgba(255, 255, 255, .88);
+      --surface-solid: #fff;
+      --line: #d9d9de;
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --blue: #0071e3;
+      --blue-soft: #e8f2ff;
+      --orange: #b45309;
+      --orange-soft: #fff3df;
+      --red: #c92a2a;
+      --red-soft: #fff0f0;
+      --green: #14804a;
+      --focus: #0071e3;
+      --radius: 8px;
+      --shadow: 0 12px 36px rgba(0, 0, 0, .08);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; background: var(--bg); color: var(--text); }
+    body { font-size: 15px; line-height: 1.5; letter-spacing: 0; }
+    button, input, textarea, select { font: inherit; letter-spacing: 0; }
+    button, select, input, textarea { border-radius: var(--radius); }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .55; }
+    :focus-visible { outline: 3px solid rgba(0, 113, 227, .28); outline-offset: 2px; }
+    .hidden { display: none !important; }
+    .muted, .hint { color: var(--muted); }
+    .hint { margin: 0; font-size: 13px; }
+    .danger-text { color: var(--red); }
+    .app-loading { min-height: 100vh; display: grid; place-items: center; color: var(--muted); }
+    .spinner { width: 28px; height: 28px; border: 3px solid #dedee2; border-top-color: var(--blue); border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: 28px; line-height: 1.2; margin-bottom: 8px; letter-spacing: 0; }
+    h2 { font-size: 21px; line-height: 1.3; }
+    h3 { font-size: 16px; line-height: 1.35; }
+    .auth-page { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+    .auth-card { width: min(420px, 100%); background: var(--surface-solid); border: 1px solid rgba(0, 0, 0, .08); border-radius: 8px; padding: clamp(28px, 6vw, 48px); box-shadow: var(--shadow); animation: rise .35s ease-out both; }
+    .auth-mark { width: 48px; height: 48px; display: grid; place-items: center; color: #fff; background: var(--blue); border-radius: 14px; margin-bottom: 24px; }
+    .auth-mark svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .brand-name { font-size: 21px; font-weight: 700; margin-bottom: 5px; overflow-wrap: anywhere; }
+    .auth-subtitle { color: var(--muted); margin-bottom: 30px; }
+    .auth-panel form { width: 100%; }
+    .field { display: grid; gap: 6px; margin: 17px 0; }
+    .field label, .label { font-weight: 600; font-size: 14px; }
+    input, textarea, select { width: 100%; border: 1px solid #c7c7cc; background: #fff; color: var(--text); padding: 10px 12px; min-height: 44px; transition: border-color .18s, box-shadow .18s; }
+    textarea { min-height: 128px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0, 113, 227, .12); outline: 0; }
+    .form-error { min-height: 24px; margin: 8px 0; color: var(--red); }
+
+    .btn { border: 1px solid #c7c7cc; background: rgba(255, 255, 255, .78); color: var(--text); min-height: 40px; padding: 8px 14px; font-weight: 600; transition: background .18s, border-color .18s, transform .18s; }
+    .btn:hover { background: #f0f0f2; border-color: #aaaab0; }
+    .btn:active { transform: scale(.98); }
+    .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .btn.primary:hover { background: #0067cf; }
+    .btn.danger { color: var(--red); border-color: #e5b8b8; }
+    .btn.block { width: 100%; min-height: 48px; }
+    .btn.icon { width: 40px; padding: 0; font-size: 20px; line-height: 1; }
+    .btn.send { min-height: 54px; font-size: 17px; background: var(--blue); border-color: var(--blue); color: #fff; }
+    .btn.send:hover { background: #0067cf; }
+    .btn.send.is-warning { background: var(--orange); border-color: var(--orange); }
+    .btn.send.is-urgent { background: var(--red); border-color: var(--red); }
+
+    .shell { min-height: 100vh; display: grid; grid-template-columns: 232px minmax(0, 1fr); grid-template-rows: 64px minmax(0, 1fr); }
+    .topbar { grid-column: 1 / -1; background: rgba(255, 255, 255, .88); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 14px; padding: 0 24px; position: sticky; top: 0; z-index: 10; backdrop-filter: blur(18px); }
+    .wordmark { font-size: 19px; font-weight: 700; overflow-wrap: anywhere; }
+    .topbar .spacer { flex: 1; }
+    .user-meta { text-align: right; line-height: 1.25; }
+    .user-meta strong, .user-meta span { display: block; }
+    .user-meta span { color: var(--muted); font-size: 12px; }
+    .sidebar { background: rgba(245, 245, 247, .92); border-right: 1px solid var(--line); padding: 20px 12px; min-height: calc(100vh - 64px); }
+    .nav { display: grid; gap: 4px; }
+    .nav button { border: 0; background: transparent; color: #515158; text-align: left; min-height: 44px; padding: 10px 14px; border-radius: var(--radius); font-weight: 600; display: flex; align-items: center; gap: 10px; transition: background .18s, color .18s; }
+    .nav button:hover { background: #e9e9ed; color: var(--text); }
+    .nav button.active { background: #e1ecfb; color: #005bb8; }
+    .nav-icon { width: 19px; height: 19px; display: grid; place-items: center; opacity: .82; }
+    .nav-icon svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    main { min-width: 0; padding: 34px clamp(18px, 4vw, 56px) 62px; }
+    .view { max-width: 1180px; margin: 0 auto; animation: rise .24s ease-out both; }
+    .view-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--line); padding-bottom: 18px; margin-bottom: 26px; }
+    .view-head h1 { margin: 0 0 5px; }
+    .view-head p { color: var(--muted); margin: 0; }
+    .toolbar { display: flex; align-items: end; gap: 10px; flex-wrap: wrap; }
+    .toolbar .field { margin: 0; min-width: 170px; }
+
+    .console-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, .7fr); gap: 28px; align-items: start; }
+    .compose { background: var(--surface-solid); border: 1px solid rgba(0, 0, 0, .08); padding: clamp(20px, 3vw, 30px); border-radius: 8px; box-shadow: var(--shadow); }
+    .target-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 14px; }
+    .target-row .field { margin: 0; }
+    .presence { min-height: 44px; height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid var(--line); background: #fafafa; border-radius: var(--radius); white-space: nowrap; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #929297; flex: none; }
+    .dot.online { background: var(--green); box-shadow: 0 0 0 4px #def4e9; }
+    .phrases { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 22px; }
+    .phrase { border: 1px solid #d0d0d5; background: #fafafa; padding: 7px 11px; color: #4b4b51; border-radius: 18px; }
+    .phrase:hover { background: #f0f0f2; }
+    .level-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 20px 0 9px; }
+    .level-heading .label { margin: 0; }
+    .level-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .level-option { display: grid; grid-template-columns: auto 1fr; gap: 9px; align-items: start; padding: 12px; border: 1px solid #d3d3d8; border-radius: var(--radius); background: #fff; cursor: pointer; transition: border-color .18s, background .18s, box-shadow .18s; }
+    .level-option input { position: absolute; opacity: 0; pointer-events: none; }
+    .level-option:hover { background: #fafafa; }
+    .level-option.selected { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0, 113, 227, .11); background: var(--blue-soft); }
+    .level-option.warning.selected { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(180, 83, 9, .12); background: var(--orange-soft); }
+    .level-option.urgent.selected { border-color: var(--red); box-shadow: 0 0 0 3px rgba(201, 42, 42, .12); background: var(--red-soft); }
+    .level-icon { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 50%; background: var(--blue); color: #fff; font-size: 13px; font-weight: 700; }
+    .level-option.warning .level-icon { background: var(--orange); }
+    .level-option.urgent .level-icon { background: var(--red); }
+    .level-option strong { display: block; font-size: 14px; }
+    .level-option small { display: block; color: var(--muted); line-height: 1.35; margin-top: 2px; }
+    .advanced { margin: 16px 0 20px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .advanced summary { cursor: pointer; padding: 13px 0; color: #4b4b51; font-weight: 600; list-style-position: inside; }
+    .advanced[open] summary { color: var(--blue); }
+    .mode-picker { display: flex; gap: 8px; margin: 0 0 18px; }
+    .mode-button { flex: 1; border: 1px solid var(--line); background: #fff; color: var(--muted); border-radius: 8px; padding: 11px 14px; font: inherit; font-weight: 600; cursor: pointer; }
+    .mode-button.selected { border-color: var(--blue); background: #eef6ff; color: var(--blue); }
+    .voice-composer { display: grid; gap: 10px; padding: 16px; border: 1px dashed var(--line); border-radius: 8px; background: #fbfbfd; }
+    .record-button { min-height: 54px; border: 0; border-radius: 8px; background: var(--blue); color: #fff; font: inherit; font-weight: 650; cursor: pointer; }
+    .record-button.recording { background: var(--red); }
+    .voice-preview { width: 100%; height: 42px; }
+    .voice-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .voice-actions .btn { flex: 1; }
+    .options-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 0 4px; }
+    .options-row .field { margin: 0 0 14px; }
+    .delivery { border-left: 3px solid #c8c8cd; padding: 16px 17px; background: #fafafa; min-height: 82px; border-radius: 0 var(--radius) var(--radius) 0; }
+    .delivery.sent { border-color: var(--orange); background: var(--orange-soft); }
+    .delivery.received, .delivery.displayed { border-color: var(--green); background: #effaf4; }
+    .delivery.offline, .delivery.failed { border-color: var(--red); background: var(--red-soft); }
+    .side-panel { display: grid; gap: 22px; align-content: start; }
+    .plain-section { background: var(--surface-solid); border: 1px solid rgba(0, 0, 0, .08); border-radius: 8px; padding: 20px; box-shadow: 0 5px 20px rgba(0, 0, 0, .04); }
+    .plain-section h2 { font-size: 17px; margin-bottom: 14px; }
+    .recent-list { display: grid; }
+    .recent-item { border-top: 1px solid var(--line); padding: 13px 0; }
+    .recent-item:first-child { border-top: 0; padding-top: 0; }
+    .recent-item p { margin: 6px 0; overflow-wrap: anywhere; }
+    .meta-row { color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 8px; }
+
+    .table-wrap { overflow: auto; background: var(--surface-solid); border: 1px solid rgba(0, 0, 0, .08); border-radius: 8px; box-shadow: 0 5px 20px rgba(0, 0, 0, .04); }
+    table { width: 100%; border-collapse: collapse; min-width: 790px; }
+    th, td { padding: 14px 15px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { background: #fafafa; color: #6e6e73; font-size: 12px; font-weight: 650; white-space: nowrap; }
+    tr:last-child td { border-bottom: 0; }
+    .status, .level-badge { display: inline-flex; align-items: center; min-height: 24px; border-radius: 12px; padding: 2px 8px; font-size: 12px; font-weight: 650; background: #ededf0; white-space: nowrap; }
+    .status.displayed, .status.received, .status.enabled { color: var(--green); background: #e2f5eb; }
+    .status.sent { color: var(--orange); background: #fff0d3; }
+    .status.offline, .status.failed, .status.disabled { color: var(--red); background: #fde8e8; }
+    .level-badge.info { color: #005bb8; background: var(--blue-soft); }
+    .level-badge.warning { color: #965000; background: var(--orange-soft); }
+    .level-badge.urgent { color: #ad2020; background: var(--red-soft); }
+    .row-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+    .row-actions .btn { min-height: 34px; padding: 5px 9px; font-size: 13px; }
+    .grade-filter { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 9px; background: #fafafa; }
+    .grade-filter button { border: 0; background: transparent; color: var(--muted); min-height: 34px; padding: 5px 12px; border-radius: 7px; font-weight: 600; }
+    .grade-filter button:hover { color: var(--text); background: #f0f0f2; }
+    .grade-filter button.active { color: #005bb8; background: var(--blue-soft); }
+    .grade-divider td { padding: 10px 15px 7px; border-bottom: 1px solid var(--line); background: #f7f7f9; color: #515158; font-size: 13px; font-weight: 700; }
+    .empty { text-align: center; padding: 50px 18px; color: var(--muted); background: var(--surface-solid); border: 1px solid rgba(0, 0, 0, .08); border-radius: 8px; }
+
+    dialog { width: min(560px, calc(100vw - 28px)); border: 0; padding: 0; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,.24); color: var(--text); }
+    dialog::backdrop { background: rgba(0, 0, 0, .38); backdrop-filter: blur(3px); }
+    .dialog-head { padding: 20px 22px 13px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .dialog-head h2 { font-size: 20px; margin: 0; }
+    .dialog-body { padding: 20px 22px; max-height: 65vh; overflow: auto; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 9px; padding: 14px 22px 20px; }
+    .confirm-summary { display: grid; gap: 8px; padding: 14px; border: 1px solid var(--line); background: #fafafa; border-radius: var(--radius); }
+    .confirm-summary p { margin: 0; overflow-wrap: anywhere; }
+    .check-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .check-item { display: flex; align-items: center; gap: 8px; min-height: 40px; border: 1px solid var(--line); padding: 7px 10px; border-radius: var(--radius); }
+    .check-item input { width: 18px; min-height: 18px; margin: 0; }
+    .code-box { font: 700 28px/1.2 Consolas, monospace; letter-spacing: 2px; text-align: center; background: #f3f3f5; padding: 18px; border: 1px dashed #aaaab0; border-radius: var(--radius); overflow-wrap: anywhere; }
+    .toast-region { position: fixed; right: 18px; bottom: 18px; z-index: 100; display: grid; gap: 8px; width: min(360px, calc(100vw - 36px)); }
+    .toast { background: #1d1d1f; color: #fff; padding: 12px 14px; box-shadow: var(--shadow); border-radius: var(--radius); }
+    .settings-device-section { margin-top: 28px; }
+    .load-more { margin-top: 14px; }
+    .quiet-status { padding: 16px 18px; border-left: 4px solid var(--green); background: #effaf4; border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: 22px; }
+    .quiet-status.active { border-color: var(--orange); background: var(--orange-soft); }
+    .quiet-status strong, .quiet-status span { display: block; }
+    .quiet-status span { color: var(--muted); margin-top: 3px; }
+    .schedule-list { display: grid; gap: 10px; }
+    .schedule-item { display: grid; grid-template-columns: minmax(140px, 1fr) 120px 120px auto; gap: 10px; align-items: end; padding: 15px; border: 1px solid var(--line); background: #fff; border-radius: var(--radius); }
+    .schedule-item .field { margin: 0; }
+    .weekday-picker { grid-column: 1 / -1; display: flex; gap: 7px; flex-wrap: wrap; }
+    .weekday-picker label { display: inline-flex; align-items: center; gap: 5px; min-height: 34px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 7px; background: #fafafa; }
+    .weekday-picker input { width: 16px; min-height: 16px; margin: 0; }
+    .quiet-warning { margin-top: 14px; padding: 14px; border-left: 4px solid var(--orange); background: var(--orange-soft); border-radius: 0 var(--radius) var(--radius) 0; }
+    .quiet-warning strong, .quiet-warning p { display: block; margin: 0; }
+    .quiet-warning p { margin-top: 5px; }
+    .level-option.disabled { opacity: .48; cursor: not-allowed; }
+
+    @media (max-width: 880px) {
+      .shell { grid-template-columns: 1fr; grid-template-rows: 62px minmax(0, 1fr) auto; }
+      .topbar { grid-column: 1; padding: 0 16px; }
+      .wordmark { font-size: 17px; }
+      .sidebar { grid-row: 3; min-height: 0; padding: 8px; overflow-x: auto; position: sticky; bottom: 0; z-index: 12; border-right: 0; border-top: 1px solid var(--line); backdrop-filter: blur(18px); }
+      .nav { display: flex; width: 100%; min-width: 0; }
+      .nav button { flex: 1; justify-content: center; text-align: center; white-space: nowrap; padding: 9px 5px; font-size: 12px; flex-direction: column; gap: 1px; }
+      .nav-icon { height: 17px; }
+      main { grid-row: 2; padding: 24px 16px 38px; }
+      .console-layout { grid-template-columns: 1fr; }
+      .user-meta { display: none; }
+      .view-head { display: block; }
+      .view-head .toolbar { margin-top: 15px; }
+    }
+    @media (max-width: 560px) {
+      .auth-page { padding: 14px; align-items: start; padding-top: 8vh; }
+      .auth-card { padding: 28px 22px; }
+      .target-row { grid-template-columns: 1fr; }
+      .presence { margin-top: 0; }
+      .level-picker, .options-row { grid-template-columns: 1fr; }
+      .compose { padding: 19px 16px; }
+      .toolbar { align-items: stretch; }
+      .toolbar .field, .toolbar .btn { width: 100%; }
+      .check-grid { grid-template-columns: 1fr; }
+      .schedule-item { grid-template-columns: 1fr 1fr; }
+      .schedule-item > .field:first-child { grid-column: 1 / -1; }
+      dialog { width: calc(100vw - 18px); }
+      .dialog-actions { flex-wrap: wrap; }
+      .dialog-actions .btn { flex: 1; }
+      .nav button { min-width: 0; }
+      .nav button [data-label] { max-width: 65px; overflow: hidden; text-overflow: ellipsis; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading" class="app-loading"><div class="spinner" aria-label="正在加载"></div></div>
+
+  <section id="authPage" class="auth-page hidden">
+    <div class="auth-card">
+      <div class="auth-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10v4h3l4 3V7l-4 3H4Z"/><path d="M15 9.5a4 4 0 0 1 0 5M17.5 7a7.5 7.5 0 0 1 0 10"/></svg></div>
+      <div class="brand-name">ICeCream Shouter</div>
+      <p class="auth-subtitle">远程喊话控制台</p>
+      <form id="loginForm" class="hidden">
+        <h1>账号登录</h1>
+        <p class="muted">使用管理员分配的教师账号登录。</p>
+        <div class="field"><label for="loginUsername">用户名</label><input id="loginUsername" autocomplete="username" required maxlength="64"></div>
+        <div class="field"><label for="loginPassword">密码</label><input id="loginPassword" type="password" autocomplete="current-password" required maxlength="128"></div>
+        <p id="loginError" class="form-error" role="alert"></p>
+        <button class="btn primary block" type="submit">登录</button>
+      </form>
+
+      <form id="bootstrapForm" class="hidden">
+        <h1>初始化最高管理员</h1>
+        <p class="muted">系统将创建唯一的最高管理员账号 <strong>ICe</strong>。</p>
+        <div class="field"><label for="bootstrapToken">部署初始化密钥</label><input id="bootstrapToken" type="password" autocomplete="off" required></div>
+        <div class="field"><label for="bootstrapPassword">设置 ICe 密码</label><input id="bootstrapPassword" type="password" autocomplete="new-password" required minlength="10" maxlength="128"><p class="hint">至少 10 位，同时包含字母和数字。</p></div>
+        <div class="field"><label for="bootstrapPasswordConfirm">再次输入密码</label><input id="bootstrapPasswordConfirm" type="password" autocomplete="new-password" required></div>
+        <p id="bootstrapError" class="form-error" role="alert"></p>
+        <button class="btn primary block" type="submit">完成初始化</button>
+      </form>
+    </div>
+  </section>
+
+  <div id="appShell" class="shell hidden">
+    <header class="topbar">
+      <div class="wordmark">ICeCream Shouter</div>
+      <div class="spacer"></div>
+      <div class="user-meta"><strong id="userDisplayName"></strong><span id="userRole"></span></div>
+      <button id="logoutButton" class="btn">退出</button>
+    </header>
+    <aside class="sidebar">
+      <nav id="mainNav" class="nav" aria-label="主要功能">
+        <button data-view="console" class="active"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg></span><span data-label>喊话台</span></button>
+        <button data-view="history"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><span data-label>历史记录</span></button>
+        <button data-view="quiet"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span><span data-label>禁言时间</span></button>
+        <button data-view="classes" data-admin><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg></span><span data-label>班级管理</span></button>
+        <button data-view="teachers" data-admin><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5 20a7 7 0 0 1 14 0"/></svg></span><span data-label>教师管理</span></button>
+        <button data-view="settings"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3.5"/></svg></span><span data-label>账号与设备</span></button>
+      </nav>
+    </aside>
+    <main>
+      <section id="view-console" class="view">
+        <div class="view-head"><div><h1>喊话台</h1><p>选择通知类型，消息会立即送达对应班级。</p></div></div>
+        <div class="console-layout">
+          <form id="shoutForm" class="compose">
+            <div class="target-row">
+              <div class="field"><label for="targetClass">目标班级</label><select id="targetClass" required></select></div>
+              <div id="presence" class="presence"><span class="dot"></span><span>正在检查</span></div>
+            </div>
+            <div class="mode-picker" role="tablist" aria-label="喊话方式">
+              <button id="textModeButton" class="mode-button selected" type="button" role="tab" aria-selected="true">文字喊话</button>
+              <button id="voiceModeButton" class="mode-button" type="button" role="tab" aria-selected="false">语音喊话</button>
+            </div>
+            <div id="textComposer">
+              <div class="field"><label for="shoutText">喊话内容</label><textarea id="shoutText" maxlength="500" required placeholder="输入要在教室大屏显示和播报的内容"></textarea><p class="hint"><span id="charCount">0</span>/500</p></div>
+            </div>
+            <div id="voiceComposer" class="voice-composer hidden" aria-live="polite">
+              <button id="recordButton" class="record-button" type="button">按住说话</button>
+              <p id="recordStatus" class="hint">最长 30 秒，播放教师原声；松开后可试听。</p>
+              <audio id="voicePreview" class="voice-preview hidden" controls preload="metadata"></audio>
+              <p id="voicePreviewStatus" class="hint" role="status"></p>
+              <div class="voice-actions"><button id="playVoiceButton" class="btn hidden" type="button">试听</button><button id="stopVoiceButton" class="btn hidden" type="button">停止试听</button><button id="reRecordButton" class="btn hidden" type="button">重录</button><button id="clearVoiceButton" class="btn hidden" type="button">取消语音</button></div>
+            </div>
+            <div id="textPhrases" class="phrases" aria-label="快捷短语">
+              <button class="phrase" type="button">全班保持安静</button>
+              <button class="phrase" type="button">请班长到讲台前收作业</button>
+              <button class="phrase" type="button">眼保健操开始</button>
+              <button class="phrase" type="button">请任课老师查看消息</button>
+            </div>
+            <div class="level-heading"><span class="label">通知类型</span><span id="levelDescription" class="hint">右下角悬浮，默认显示 8 秒</span></div>
+            <div class="level-picker" role="radiogroup" aria-label="通知类型">
+              <label class="level-option info selected"><input type="radio" name="alertLevel" value="info" checked><span class="level-icon" aria-hidden="true">i</span><span><strong>普通</strong><small>右下角静音弹窗</small></span></label>
+              <label class="level-option warning"><input type="radio" name="alertLevel" value="warning"><span class="level-icon" aria-hidden="true">!</span><span><strong>重要</strong><small>顶部横幅并播放声音</small></span></label>
+              <label class="level-option urgent"><input type="radio" name="alertLevel" value="urgent"><span class="level-icon" aria-hidden="true">!</span><span><strong>紧急</strong><small>全屏提醒并播放声音</small></span></label>
+            </div>
+            <details id="advancedSettings" class="advanced">
+              <summary>更多设置</summary>
+              <div class="options-row">
+                <div class="field"><label for="ttsSpeed">语速</label><select id="ttsSpeed"><option value="-2">较慢</option><option value="0" selected>正常</option><option value="2">较快</option><option value="4">很快</option></select></div>
+                <div class="field"><label for="displayDuration">显示时长</label><select id="displayDuration"><option value="8" selected>8 秒</option><option value="10">10 秒</option><option value="12">12 秒</option><option value="15">15 秒</option><option value="20">20 秒</option></select></div>
+              </div>
+            </details>
+            <button id="sendButton" class="btn send block" type="submit">发送喊话</button>
+          </form>
+          <aside class="side-panel">
+            <section class="plain-section">
+              <h2>本次送达</h2>
+              <div id="deliveryState" class="delivery"><strong>尚未发送</strong><p class="hint">选择班级并输入喊话内容。</p></div>
+            </section>
+            <section class="plain-section"><h2>最近喊话</h2><div id="recentList" class="recent-list"><p class="muted">暂无记录</p></div></section>
+          </aside>
+        </div>
+      </section>
+
+      <section id="view-history" class="view hidden">
+        <div class="view-head">
+          <div><h1>历史记录</h1><p>记录发送人、目标班级和教室处理结果。</p></div>
+          <div class="toolbar"><div class="field"><label for="historyClass">班级</label><select id="historyClass"></select></div><button id="refreshHistory" class="btn">刷新</button><button id="exportHistory" class="btn">导出 CSV</button></div>
+        </div>
+        <div id="historyContainer"></div>
+      </section>
+
+      <section id="view-quiet" class="view hidden">
+        <div class="view-head"><div><h1>公共禁言时间</h1><p>全校教师共同查看；时段内发送前会再次提醒，由班主任决定是否继续。</p></div><button id="saveQuietSchedule" class="btn primary" type="button" data-admin>保存时间表</button></div>
+        <div id="quietCurrentStatus" class="quiet-status"><strong>正在读取当前状态</strong><span>时间统一按北京时间计算。</span></div>
+        <section class="plain-section">
+          <div class="view-head"><div><h2>每周时间表</h2><p>普通通知始终静音；重要和紧急通知会播放声音。</p></div><button id="addQuietPeriod" class="btn" type="button" data-admin>添加时段</button></div>
+          <div id="quietScheduleList" class="schedule-list"></div>
+          <p id="quietScheduleError" class="form-error" data-admin></p>
+        </section>
+      </section>
+
+      <section id="view-classes" class="view hidden">
+        <div class="view-head">
+          <div><h1>班级管理</h1><p>班级由最高管理员创建；停用班级仍保留历史记录。</p></div>
+          <div class="toolbar"><div id="classGradeFilter" class="grade-filter" role="tablist" aria-label="年级筛选"><button type="button" data-grade-filter="all" class="active">全部</button><button type="button" data-grade-filter="高一">高一</button><button type="button" data-grade-filter="高二">高二</button><button type="button" data-grade-filter="高三">高三</button></div><button id="allClassesButton" class="btn primary">一键创建高中60班</button><button id="batchClassButton" class="btn">批量创建</button><button id="addClassButton" class="btn">创建班级</button></div>
+        </div>
+        <div id="classesContainer"></div>
+      </section>
+
+      <section id="view-teachers" class="view hidden">
+        <div class="view-head">
+          <div><h1>教师管理</h1><p>为教师创建账号并分配可以喊话的班级。</p></div>
+          <div class="toolbar"><button id="addTeacherButton" class="btn primary">创建教师</button></div>
+        </div>
+        <div id="teachersContainer"></div>
+      </section>
+
+      <section id="view-settings" class="view hidden">
+        <div class="view-head"><div><h1>账号与设备</h1><p>修改当前登录密码，并管理已绑定的教室电脑。</p></div></div>
+        <div class="console-layout">
+          <form id="ownPasswordForm" class="compose">
+            <h2>修改我的密码</h2>
+            <div class="field"><label for="currentPassword">当前密码</label><input id="currentPassword" type="password" autocomplete="current-password" required maxlength="128"></div>
+            <div class="field"><label for="ownNewPassword">新密码</label><input id="ownNewPassword" type="password" autocomplete="new-password" required minlength="10" maxlength="128"><p class="hint">至少 10 位，同时包含字母和数字。</p></div>
+            <div class="field"><label for="ownNewPasswordConfirm">再次输入新密码</label><input id="ownNewPasswordConfirm" type="password" autocomplete="new-password" required maxlength="128"></div>
+            <p id="ownPasswordError" class="form-error"></p>
+            <button class="btn primary" type="submit">修改密码</button>
+          </form>
+          <section class="plain-section"><h2>当前账号</h2><p id="settingsAccount"></p><p class="hint">修改密码后，所有已登录浏览器会退出，需要使用新密码重新登录。</p></section>
+        </div>
+        <section id="deviceSection" class="settings-device-section" data-admin>
+          <div class="view-head"><div><h2>教室电脑</h2><p>停用后，该设备会立即断开且不能再接收喊话。</p></div><button id="refreshDevices" class="btn" type="button">刷新设备</button></div>
+          <div id="devicesContainer"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="confirmDialog">
+    <div class="dialog-head"><h2 id="confirmTitle">确认发送</h2><button class="btn icon" type="button" data-close aria-label="关闭">×</button></div>
+    <div class="dialog-body"><div class="confirm-summary"><p id="confirmTarget"></p><p id="confirmLevel"></p><p id="confirmMode"></p><p id="confirmText"></p></div><div id="quietWarning" class="quiet-warning hidden"><strong id="quietWarningTitle"></strong><p id="quietWarningDetail"></p></div><p class="danger-text">新喊话将立即中断该教室正在播放的上一条内容。</p></div>
+    <div class="dialog-actions"><button class="btn" type="button" data-close>取消</button><button id="confirmSend" class="btn send" type="button">确认发送</button></div>
+  </dialog>
+
+  <dialog id="classDialog">
+    <form id="classForm">
+      <div class="dialog-head"><h2>创建班级</h2><button class="btn icon" type="button" data-close aria-label="关闭">×</button></div>
+      <div class="dialog-body"><div class="field"><label for="className">班级名称</label><input id="className" required maxlength="40" placeholder="例如：高一（1）班"></div><p id="classError" class="form-error"></p></div>
+      <div class="dialog-actions"><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit">创建</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="batchDialog">
+    <form id="batchForm">
+      <div class="dialog-head"><h2>批量创建班级</h2><button class="btn icon" type="button" data-close aria-label="关闭">×</button></div>
+      <div class="dialog-body">
+        <div class="field"><label for="batchGrade">年级</label><select id="batchGrade"><option>高一</option><option>高二</option><option>高三</option></select></div>
+        <div class="options-row"><div class="field"><label for="batchStart">起始班号</label><input id="batchStart" type="number" min="1" max="60" value="1" required></div><div class="field"><label for="batchEnd">结束班号</label><input id="batchEnd" type="number" min="1" max="60" value="20" required></div></div>
+        <p id="batchError" class="form-error"></p>
+      </div>
+      <div class="dialog-actions"><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit">批量创建</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="renameClassDialog">
+    <form id="renameClassForm">
+      <div class="dialog-head"><h2>修改班级名称</h2><button class="btn icon" type="button" data-close aria-label="关闭">×</button></div>
+      <div class="dialog-body"><div class="field"><label for="renameClassName">班级名称</label><input id="renameClassName" required maxlength="40"></div><input id="renameClassId" type="hidden"><p id="renameClassError" class="form-error"></p></div>
+      <div class="dialog-actions"><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit">保存</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="teacherDialog">
+    <form id="teacherForm">
+      <div class="dialog-head"><h2>创建教师账号</h2><button class="btn icon" type="button" data-close aria-label="关闭">×</button></div>
+      <div class="dialog-body">
+        <div class="field"><label for="teacherUsername">登录用户名</label><input id="teacherUsername" required maxlength="64" pattern="[A-Za-z0-9_.@-]{3,64}"></div>
+        <div class="field"><label for="teacherDisplayName">教师姓名</label><input id="teacherDisplayName" required maxlength="40"></div>
+        <div class="field"><label for="teacherPassword">初始密码</label><input id="teacherPassword" type="password" required minlength="10" maxlength="128"><p class="hint">至少 10 位，同时包含字母和数字。</p></div>
+        <div class="field"><span class="label">授权班级</span><div id="newTeacherClasses" class="check-grid"></div></div>
+        <p id="teacherError" class="form-error"></p>
+      </div>
+      <div class="dialog-actions"><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit">创建账号</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="permissionDialog">
+    <form id="permissionForm">
+      <div class="dialog-head"><h2>分配班级</h2><button class="btn icon" type="button" data-close aria-label="关闭">×</button></div>
+      <div class="dialog-body"><p id="permissionTeacher"></p><div id="permissionClasses" class="check-grid"></div><input id="permissionTeacherId" type="hidden"></div>
+      <div class="dialog-actions"><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit">保存权限</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="passwordDialog">
+    <form id="passwordForm">
+      <div class="dialog-head"><h2>重置教师密码</h2><button class="btn icon" type="button" data-close aria-label="关闭">×</button></div>
+      <div class="dialog-body"><p id="passwordTeacher"></p><div class="field"><label for="newTeacherPassword">新密码</label><input id="newTeacherPassword" type="password" required minlength="10" maxlength="128"></div><input id="passwordTeacherId" type="hidden"><p id="passwordError" class="form-error"></p></div>
+      <div class="dialog-actions"><button class="btn" type="button" data-close>取消</button><button class="btn primary" type="submit">重置密码</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="enrollDialog">
+    <div class="dialog-head"><h2>绑定教室电脑</h2><button class="btn icon" type="button" data-close aria-label="关闭">×</button></div>
+    <div class="dialog-body"><p id="enrollClass"></p><div id="enrollCode" class="code-box"></div><p class="hint">在该班教室电脑的首次启动页面输入此绑定码。绑定码 15 分钟内有效且只能使用一次。</p></div>
+    <div class="dialog-actions"><button class="btn primary" type="button" data-close>完成</button></div>
+  </dialog>
+
+  <div id="toastRegion" class="toast-region" aria-live="polite"></div>
+
+  <script nonce="__CSP_NONCE__">
+    (() => {
+      "use strict";
+      const state = { user: null, csrf: "", classes: [], teachers: [], devices: [], history: [], historyOffset: 0, historyHasMore: false, recent: [], quietSchedule: { periods: [], activePeriod: null }, quietScheduleDirty: false, pendingQuietPeriod: null, selectedShoutId: null, selectedShoutClassId: null, selectedShoutLevel: null, selectedLevel: "info", deliveryTimer: null, presenceTimer: null, quietTimer: null, durationManuallySet: false, inputMode: "text", voiceBlob: null, voiceObjectUrl: "", voiceDurationSec: 0, voiceStream: null, mediaRecorder: null, voiceChunks: [], voiceStartedAt: 0, classGradeFilter: "all" };
+      const $ = id => document.getElementById(id);
+      const statusLabels = { offline: "教室离线", sent: "已发往教室", received: "教室已收到", displayed: "正在展示", failed: "处理失败" };
+      const levelMeta = {
+        info: { label: "普通", mode: "右下角静音弹窗", sound: false, duration: 8, className: "info" },
+        warning: { label: "重要", mode: "顶部横幅并播放声音", sound: true, duration: 12, className: "warning" },
+        urgent: { label: "紧急", mode: "全屏提醒并播放声音", sound: true, duration: 20, className: "urgent" },
+      };
+
+      function selectedAlertLevel() { return document.querySelector('input[name="alertLevel"]:checked')?.value || "info"; }
+
+      function classGrade(name) {
+        const match = String(name || "").match(/^(高一|高二|高三)/);
+        return match ? match[1] : "其他";
+      }
+
+      function isVoiceMode() { return state.inputMode === "voice"; }
+
+      function setInputMode(mode) {
+        state.inputMode = mode;
+        const voice = mode === "voice";
+        $("textModeButton").classList.toggle("selected", !voice);
+        $("voiceModeButton").classList.toggle("selected", voice);
+        $("textModeButton").setAttribute("aria-selected", String(!voice));
+        $("voiceModeButton").setAttribute("aria-selected", String(voice));
+        $("textComposer").classList.toggle("hidden", voice);
+        $("textPhrases").classList.toggle("hidden", voice);
+        $("voiceComposer").classList.toggle("hidden", !voice);
+        $("shoutText").required = !voice;
+        $("sendButton").textContent = voice ? "发送语音喊话" : "发送喊话";
+        const infoInput = document.querySelector('input[name="alertLevel"][value="info"]');
+        infoInput.disabled = voice;
+        infoInput.closest(".level-option")?.classList.toggle("disabled", voice);
+        if (voice && selectedAlertLevel() === "info") {
+          document.querySelector('input[name="alertLevel"][value="warning"]').checked = true;
+          updateLevelPresentation(true);
+        }
+      }
+
+      function formatVoiceDuration(value) {
+        const duration = Number(value);
+        return Number.isFinite(duration) && duration > 0 ? duration.toFixed(1) : "0.0";
+      }
+
+      function updateVoicePreviewStatus() {
+        const preview = $("voicePreview");
+        if (!state.voiceBlob) return;
+        const metadataDuration = Number.isFinite(preview.duration) && preview.duration > 0 ? preview.duration : state.voiceDurationSec;
+        if (metadataDuration > 0) state.voiceDurationSec = metadataDuration;
+        $("recordStatus").textContent = `已录制 ${formatVoiceDuration(state.voiceDurationSec)} 秒，可试听后发送。`;
+        $("voicePreviewStatus").textContent = preview.paused ? "点击“试听”播放教师原声。" : "正在试听教师原声。";
+      }
+
+      function setVoiceBlob(blob, durationSec = 0) {
+        const preview = $("voicePreview");
+        if (state.voiceObjectUrl) {
+          URL.revokeObjectURL(state.voiceObjectUrl);
+          state.voiceObjectUrl = "";
+        }
+        state.voiceBlob = blob;
+        state.voiceDurationSec = Number.isFinite(Number(durationSec)) ? Number(durationSec) : 0;
+        preview.pause();
+        preview.removeAttribute("src");
+        if (blob) {
+          state.voiceObjectUrl = URL.createObjectURL(blob);
+          preview.src = state.voiceObjectUrl;
+          preview.load();
+          preview.classList.remove("hidden");
+          $("playVoiceButton").classList.remove("hidden");
+          $("stopVoiceButton").classList.remove("hidden");
+          $("reRecordButton").classList.remove("hidden");
+          $("clearVoiceButton").classList.remove("hidden");
+          updateVoicePreviewStatus();
+        } else {
+          preview.load();
+          preview.classList.add("hidden");
+          $("playVoiceButton").classList.add("hidden");
+          $("stopVoiceButton").classList.add("hidden");
+          $("reRecordButton").classList.add("hidden");
+          $("clearVoiceButton").classList.add("hidden");
+          $("recordStatus").textContent = "最长 30 秒，播放教师原声；松开后可试听。";
+          $("voicePreviewStatus").textContent = "";
+        }
+      }
+
+      async function playVoicePreview() {
+        if (!state.voiceBlob) return toast("请先录制一段语音。");
+        const preview = $("voicePreview");
+        try {
+          await preview.play();
+          updateVoicePreviewStatus();
+        } catch (error) {
+          $("voicePreviewStatus").textContent = "试听失败，请检查浏览器声音权限后重试。";
+          toast("试听失败，请点击播放器上的播放按钮重试。");
+        }
+      }
+
+      function stopVoicePreview() {
+        const preview = $("voicePreview");
+        preview.pause();
+        preview.currentTime = 0;
+        updateVoicePreviewStatus();
+      }
+
+      function encodeWav(audioBuffer) {
+        const sampleRate = 16000;
+        const input = audioBuffer.getChannelData(0);
+        const outputLength = Math.max(1, Math.floor(input.length * sampleRate / audioBuffer.sampleRate));
+        const pcm = new Int16Array(outputLength);
+        for (let i = 0; i < outputLength; i++) {
+          const source = Math.min(input.length - 1, Math.floor(i * audioBuffer.sampleRate / sampleRate));
+          pcm[i] = Math.max(-1, Math.min(1, input[source])) * 0x7fff;
+        }
+        const buffer = new ArrayBuffer(44 + pcm.length * 2);
+        const view = new DataView(buffer);
+        const write = (offset, value) => [...value].forEach((char, index) => view.setUint8(offset + index, char.charCodeAt(0)));
+        write(0, "RIFF"); view.setUint32(4, 36 + pcm.length * 2, true); write(8, "WAVE"); write(12, "fmt "); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true); view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true); write(36, "data"); view.setUint32(40, pcm.length * 2, true);
+        pcm.forEach((sample, index) => view.setInt16(44 + index * 2, sample, true));
+        return new Blob([buffer], { type: "audio/wav" });
+      }
+
+      async function finishRecording() {
+        const recorder = state.mediaRecorder;
+        if (!recorder || recorder.state === "inactive") return;
+        recorder.stop();
+        state.voiceStream?.getTracks().forEach(track => track.stop());
+        state.voiceStream = null;
+      }
+
+      async function startRecording() {
+        if (state.mediaRecorder?.state === "recording") return;
+        if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+          toast("当前浏览器不支持录音，请改用最新版 Chrome 或 Edge。"); return;
+        }
+        try {
+          state.voiceStream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1 } });
+          state.voiceChunks = [];
+          state.mediaRecorder = new MediaRecorder(state.voiceStream);
+          state.voiceStartedAt = Date.now();
+          state.mediaRecorder.ondataavailable = event => { if (event.data.size) state.voiceChunks.push(event.data); };
+          const recorder = state.mediaRecorder;
+          recorder.onstop = async () => {
+            $("recordButton").classList.remove("recording"); $("recordButton").textContent = "按住说话";
+            const chunks = state.voiceChunks.slice();
+            if (state.mediaRecorder === recorder) state.mediaRecorder = null;
+            try {
+              const source = new Blob(chunks, { type: recorder.mimeType || chunks[0]?.type || "audio/webm" });
+              const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+              if (!AudioContextClass) throw new Error("浏览器不支持音频处理");
+              const context = new AudioContextClass();
+              try {
+                const decoded = await context.decodeAudioData(await source.arrayBuffer());
+                const duration = decoded.duration;
+                const wav = encodeWav(decoded);
+                if (duration < .5 || duration > 30 || wav.size > 4 * 1024 * 1024) { setVoiceBlob(null); toast("录音长度需为 0.5 至 30 秒。"); return; }
+                setVoiceBlob(wav, duration);
+              } finally {
+                await context.close().catch(() => {});
+              }
+            } catch { toast("录音处理失败，请重试。"); setVoiceBlob(null); }
+          };
+          state.mediaRecorder.start();
+          $("recordButton").classList.add("recording"); $("recordButton").textContent = "正在录音，松开结束";
+          $("recordStatus").textContent = "正在录音，最长 30 秒";
+          setTimeout(() => { if (state.mediaRecorder?.state === "recording") finishRecording(); }, 30_000);
+        } catch { toast("无法使用麦克风，请允许浏览器访问麦克风后重试。"); }
+      }
+
+      function updateLevelPresentation(resetDuration = false) {
+        const level = selectedAlertLevel();
+        const meta = levelMeta[level] || levelMeta.info;
+        state.selectedLevel = level;
+        document.querySelectorAll(".level-option").forEach(node => node.classList.toggle("selected", node.querySelector("input")?.value === level));
+        if (resetDuration || !state.durationManuallySet) $("displayDuration").value = String(meta.duration);
+        $("levelDescription").textContent = `${meta.mode}，默认显示 ${meta.duration} 秒`;
+        const confirmSend = $("confirmSend");
+        confirmSend.classList.toggle("is-warning", level === "warning");
+        confirmSend.classList.toggle("is-urgent", level === "urgent");
+      }
+
+      async function api(path, options = {}) {
+        const headers = new Headers(options.headers || {});
+        if (options.body && !headers.has("Content-Type") && !(options.body instanceof FormData)) headers.set("Content-Type", "application/json");
+        if (state.csrf && !["GET", "HEAD"].includes(options.method || "GET")) headers.set("X-CSRF-Token", state.csrf);
+        const response = await fetch(path, { credentials: "same-origin", ...options, headers });
+        const type = response.headers.get("Content-Type") || "";
+        const data = type.includes("application/json") ? await response.json() : await response.text();
+        if (response.status === 401 && !["/api/session", "/api/auth/login"].includes(path)) {
+          location.reload();
+          throw new Error("登录已过期，请重新登录。");
+        }
+        if (!response.ok) {
+          const error = new Error(data?.error || `请求失败 (${response.status})`);
+          error.data = data;
+          error.status = response.status;
+          throw error;
+        }
+        return data;
+      }
+
+      async function start() {
+        try {
+          const session = await api("/api/session");
+          if (session.authenticated && session.user) enterApp(session.user);
+          else {
+            const boot = await api("/api/bootstrap");
+            showAuth(Boolean(boot.required));
+          }
+        } catch {
+          try {
+            const boot = await api("/api/bootstrap");
+            showAuth(Boolean(boot.required));
+          } catch (error) {
+            showAuth(false);
+            $("loginError").textContent = error.message;
+          }
+        }
+      }
+
+      function showAuth(needsBootstrap) {
+        $("loading").classList.add("hidden");
+        $("authPage").classList.remove("hidden");
+        $(needsBootstrap ? "bootstrapForm" : "loginForm").classList.remove("hidden");
+      }
+
+      async function enterApp(user) {
+        state.user = user;
+        state.csrf = user.csrfToken;
+        $("loading").classList.add("hidden");
+        $("authPage").classList.add("hidden");
+        $("appShell").classList.remove("hidden");
+        $("userDisplayName").textContent = user.displayName;
+        $("userRole").textContent = user.role === "superadmin" ? "最高管理员" : "教师";
+        document.querySelectorAll("[data-admin]").forEach(node => node.classList.toggle("hidden", user.role !== "superadmin"));
+        await loadClasses();
+        await Promise.all([loadHistory(), loadRecent(), loadQuietHours(), user.role === "superadmin" ? Promise.all([loadTeachers(), loadDevices()]) : Promise.resolve()]);
+        $("settingsAccount").textContent = `${user.displayName}（${user.username}）`;
+        updatePresence();
+        clearInterval(state.presenceTimer);
+        state.presenceTimer = setInterval(updatePresence, 15000);
+        clearInterval(state.quietTimer);
+        state.quietTimer = setInterval(() => loadQuietHours({ refreshEditor: false }).catch(() => {}), 60000);
+      }
+
+      async function loadClasses() {
+        const data = await api("/api/classes");
+        state.classes = data.classes;
+        fillClassSelects();
+        renderClasses();
+      }
+
+      function fillClassSelects() {
+        const active = state.classes.filter(item => Number(item.enabled) === 1);
+        const target = $("targetClass");
+        const previousTarget = target.value; target.replaceChildren();
+        for (const item of active) target.append(new Option(item.name, item.id));
+        if ([...target.options].some(option => option.value === previousTarget)) target.value = previousTarget;
+        const requestedClass = new URLSearchParams(location.search).get("class") || "";
+        const requested = active.find(item => item.id === requestedClass || item.name === requestedClass);
+        if (requested) target.value = requested.id;
+        const history = $("historyClass");
+        const previousHistory = history.value; history.replaceChildren(new Option("全部班级", ""));
+        for (const item of state.classes) history.append(new Option(Number(item.enabled) === 1 ? item.name : `${item.name}（已停用）`, item.id));
+        if ([...history.options].some(option => option.value === previousHistory)) history.value = previousHistory;
+        if (!$("targetClass").value && active[0]) $("targetClass").value = active[0].id;
+        renderClassChecks("newTeacherClasses", []);
+      }
+
+      async function loadHistory(append = false) {
+        const classId = $("historyClass")?.value || "";
+        const offset = append ? state.historyOffset : 0;
+        const data = await api(`/api/history?limit=100&offset=${offset}${classId ? `&classId=${encodeURIComponent(classId)}` : ""}`);
+        state.history = append ? [...state.history, ...data.history] : data.history;
+        state.historyOffset = offset + data.history.length;
+        state.historyHasMore = Boolean(data.hasMore);
+        renderHistory();
+      }
+
+      async function loadRecent() {
+        const classId = $("targetClass")?.value || "";
+        if (!classId) { state.recent = []; renderRecent(); return; }
+        const data = await api(`/api/history?classId=${encodeURIComponent(classId)}&limit=5`);
+        state.recent = data.history;
+        renderRecent();
+      }
+
+      async function loadTeachers() {
+        if (state.user?.role !== "superadmin") return;
+        const data = await api("/api/teachers");
+        state.teachers = data.teachers;
+        renderTeachers();
+      }
+
+      async function loadDevices() {
+        if (state.user?.role !== "superadmin") return;
+        const data = await api("/api/devices");
+        state.devices = data.devices;
+        renderDevices();
+      }
+
+      async function loadQuietHours({ refreshEditor = true } = {}) {
+        state.quietSchedule = await api("/api/quiet-hours");
+        renderQuietStatus();
+        if (refreshEditor && !state.quietScheduleDirty) renderQuietEditor();
+        return state.quietSchedule;
+      }
+
+      function setQuietScheduleDirty(dirty = true) {
+        state.quietScheduleDirty = dirty;
+        if (state.user?.role === "superadmin") $("saveQuietSchedule").textContent = dirty ? "保存修改" : "保存时间表";
+      }
+
+      function scheduleField(label, type, value, name) {
+        const wrap = el("div", "field");
+        const caption = el("label", "", label);
+        const input = document.createElement("input");
+        input.type = type; input.value = value || ""; input.dataset.scheduleField = name;
+        input.disabled = state.user?.role !== "superadmin";
+        wrap.append(caption, input);
+        return wrap;
+      }
+
+      function createScheduleItem(period = {}) {
+        const item = el("div", "schedule-item");
+        item.dataset.periodId = period.id || "";
+        item.append(scheduleField("名称", "text", period.name || "上课时间", "name"), scheduleField("开始", "time", period.startTime || "08:00", "startTime"), scheduleField("结束", "time", period.endTime || "08:40", "endTime"));
+        const remove = actionButton("删除", () => { item.remove(); setQuietScheduleDirty(); });
+        remove.classList.add("danger");
+        remove.hidden = state.user?.role !== "superadmin";
+        item.append(remove);
+        const weekdays = el("div", "weekday-picker");
+        const selected = new Set(period.weekdays || [1, 2, 3, 4, 5]);
+        ["一", "二", "三", "四", "五", "六", "日"].forEach((label, index) => {
+          const option = document.createElement("label");
+          const input = document.createElement("input");
+          input.type = "checkbox"; input.value = String(index + 1); input.checked = selected.has(index + 1);
+          input.disabled = state.user?.role !== "superadmin";
+          option.append(input, document.createTextNode(`周${label}`));
+          weekdays.append(option);
+        });
+        item.append(weekdays);
+        return item;
+      }
+
+      function renderQuietStatus() {
+        const schedule = state.quietSchedule || { periods: [], activePeriod: null };
+        const status = $("quietCurrentStatus");
+        const active = schedule.activePeriod;
+        status.classList.toggle("active", Boolean(active));
+        status.replaceChildren(
+          el("strong", "", active ? "当前是禁言上课时间" : "当前不在禁言时间"),
+          el("span", "", active ? `${active.name} ${active.startTime}–${active.endTime}；发送时会提醒教师再次确认。` : "教师可正常发送；进入表内时段后，发送前会出现提醒。"),
+        );
+      }
+
+      function renderQuietEditor() {
+        const schedule = state.quietSchedule || { periods: [] };
+        const list = $("quietScheduleList");
+        list.replaceChildren();
+        if (!schedule.periods?.length && state.user?.role !== "superadmin") {
+          list.append(el("div", "empty", "管理员尚未设置公共禁言时间"));
+          return;
+        }
+        for (const period of schedule.periods || []) list.append(createScheduleItem(period));
+        if (!schedule.periods?.length && state.user?.role === "superadmin") list.append(createScheduleItem());
+        setQuietScheduleDirty(false);
+      }
+
+      function renderQuietSchedule() {
+        renderQuietStatus();
+        renderQuietEditor();
+      }
+
+      function collectQuietPeriods() {
+        return [...$("quietScheduleList").querySelectorAll(".schedule-item")].map(item => ({
+          id: item.dataset.periodId || undefined,
+          name: item.querySelector('[data-schedule-field="name"]').value.trim(),
+          startTime: item.querySelector('[data-schedule-field="startTime"]').value,
+          endTime: item.querySelector('[data-schedule-field="endTime"]').value,
+          weekdays: [...item.querySelectorAll('.weekday-picker input:checked')].map(input => Number(input.value)),
+        }));
+      }
+
+      async function saveQuietSchedule() {
+        const button = $("saveQuietSchedule");
+        button.disabled = true; $("quietScheduleError").textContent = "";
+        try {
+          state.quietSchedule = await api("/api/quiet-hours", { method: "PUT", body: JSON.stringify({ periods: collectQuietPeriods() }) });
+          setQuietScheduleDirty(false);
+          renderQuietSchedule(); toast("公共禁言时间表已保存");
+        } catch (error) { $("quietScheduleError").textContent = error.message; }
+        finally { button.disabled = false; }
+      }
+
+      function renderHistory() {
+        const container = $("historyContainer");
+        if (!state.history.length) return renderEmpty(container, "还没有喊话记录");
+        const table = createTable(["时间", "班级", "发送教师", "通知级别", "类型", "内容", "结果"]);
+        for (const item of state.history) {
+          const row = table.tBodies[0].insertRow();
+          addCell(row, formatTime(item.created_at));
+          addCell(row, item.class_name);
+          addCell(row, item.sender_name);
+          const levelCell = row.insertCell();
+          levelCell.append(levelBadge(item.alert_level));
+          if (Number(item.quiet_override) === 1) levelCell.append(el("div", "hint", "禁言时段确认发送"));
+          addCell(row, item.content_type === "audio" ? `语音（${((item.audio_duration_ms || 0) / 1000).toFixed(1)} 秒）` : "文字");
+          addCell(row, item.content_type === "audio" ? "教师原声" : item.text);
+          const cell = row.insertCell();
+          cell.append(statusBadge(item.status));
+          if (item.status_detail) cell.append(el("div", "hint", item.status_detail));
+        }
+        const content = document.createDocumentFragment();
+        content.append(wrapTable(table));
+        if (state.historyHasMore) {
+          const more = actionButton("加载更多", () => loadHistory(true).catch(error => toast(error.message)));
+          more.classList.add("block", "load-more"); content.append(more);
+        }
+        container.replaceChildren(content);
+      }
+
+      function renderRecent() {
+        const list = $("recentList");
+        list.replaceChildren();
+        if (!state.recent.length) return list.append(el("p", "muted", "暂无记录"));
+        for (const item of state.recent) {
+          const node = el("article", "recent-item");
+          const meta = el("div", "meta-row");
+          meta.append(el("span", "", item.class_name), el("span", "", formatTime(item.created_at, true)));
+          node.append(meta, levelBadge(item.alert_level));
+          if (Number(item.quiet_override) === 1) node.append(el("div", "hint", "禁言时段确认发送"));
+          node.append(el("p", "", item.content_type === "audio" ? `语音喊话（${((item.audio_duration_ms || 0) / 1000).toFixed(1)} 秒）` : item.text), statusBadge(item.status));
+          list.append(node);
+        }
+      }
+
+      function renderClasses() {
+        const container = $("classesContainer");
+        if (!container || state.user?.role !== "superadmin") return;
+        const visible = state.classes.filter(item => state.classGradeFilter === "all" || classGrade(item.name) === state.classGradeFilter);
+        document.querySelectorAll("#classGradeFilter [data-grade-filter]").forEach(button => button.classList.toggle("active", button.dataset.gradeFilter === state.classGradeFilter));
+        if (!visible.length) return renderEmpty(container, state.classes.length ? "当前年级还没有班级" : "尚未创建班级");
+        const table = createTable(["班级", "状态", "教师数", "设备最近连接", "操作"]);
+        let previousGrade = "";
+        for (const item of visible) {
+          const grade = classGrade(item.name);
+          if (state.classGradeFilter === "all" && grade !== previousGrade) {
+            const group = table.tBodies[0].insertRow();
+            group.className = "grade-divider";
+            const cell = group.insertCell();
+            cell.colSpan = 5;
+            cell.textContent = grade;
+            previousGrade = grade;
+          }
+          const row = table.tBodies[0].insertRow();
+          addCell(row, item.name);
+          const statusCell = row.insertCell();
+          statusCell.append(statusBadge(Number(item.enabled) === 1 ? "enabled" : "disabled", Number(item.enabled) === 1 ? "启用" : "已停用"));
+          addCell(row, String(item.teacher_count || 0));
+          addCell(row, item.last_seen_at ? formatTime(item.last_seen_at) : "从未连接");
+          const actions = el("div", "row-actions");
+          actions.append(actionButton("改名", () => openRenameClass(item)), actionButton("生成绑定码", () => generateEnrollment(item)), actionButton(Number(item.enabled) === 1 ? "停用" : "启用", () => toggleClass(item)));
+          row.insertCell().append(actions);
+        }
+        container.replaceChildren(wrapTable(table));
+      }
+
+      function renderTeachers() {
+        const container = $("teachersContainer");
+        if (!container || state.user?.role !== "superadmin") return;
+        if (!state.teachers.length) return renderEmpty(container, "尚未创建教师账号");
+        const table = createTable(["用户名", "教师姓名", "状态", "授权班级", "操作"]);
+        for (const teacher of state.teachers) {
+          const row = table.tBodies[0].insertRow();
+          addCell(row, teacher.username);
+          addCell(row, teacher.display_name);
+          row.insertCell().append(statusBadge(Number(teacher.enabled) === 1 ? "enabled" : "disabled", Number(teacher.enabled) === 1 ? "启用" : "已停用"));
+          addCell(row, teacher.classes.map(item => item.name).join("、") || "未分配");
+          const actions = el("div", "row-actions");
+          actions.append(actionButton("分配班级", () => openPermissions(teacher)), actionButton("重置密码", () => openPassword(teacher)), actionButton(Number(teacher.enabled) === 1 ? "停用" : "启用", () => toggleTeacher(teacher)));
+          row.insertCell().append(actions);
+        }
+        container.replaceChildren(wrapTable(table));
+      }
+
+      function renderDevices() {
+        const container = $("devicesContainer");
+        if (!container || state.user?.role !== "superadmin") return;
+        if (!state.devices.length) return renderEmpty(container, "尚未绑定教室电脑");
+        const table = createTable(["班级", "设备名称", "状态", "最近连接", "操作"]);
+        for (const device of state.devices) {
+          const row = table.tBodies[0].insertRow();
+          addCell(row, device.class_name); addCell(row, device.name);
+          row.insertCell().append(statusBadge(Number(device.enabled) === 1 ? "enabled" : "disabled", Number(device.enabled) === 1 ? "启用" : "已停用"));
+          addCell(row, device.last_seen_at ? formatTime(device.last_seen_at) : "从未连接");
+          const actions = el("div", "row-actions");
+          actions.append(actionButton(Number(device.enabled) === 1 ? "停用设备" : "重新启用", () => toggleDevice(device)));
+          row.insertCell().append(actions);
+        }
+        container.replaceChildren(wrapTable(table));
+      }
+
+      async function updatePresence() {
+        const classId = $("targetClass")?.value;
+        const presence = $("presence");
+        if (!classId) {
+          presence.querySelector("span:last-child").textContent = "无可用班级";
+          presence.querySelector(".dot").classList.remove("online");
+          $("sendButton").disabled = true;
+          return;
+        }
+        try {
+          const result = await api(`/api/classes/${encodeURIComponent(classId)}/status`);
+          presence.querySelector("span:last-child").textContent = result.online ? "教室在线" : "教室离线";
+          presence.querySelector(".dot").classList.toggle("online", result.online);
+          $("sendButton").disabled = false;
+        } catch {
+          presence.querySelector("span:last-child").textContent = "状态未知";
+          presence.querySelector(".dot").classList.remove("online");
+        }
+      }
+
+      async function performSend() {
+        const button = $("confirmSend");
+        button.disabled = true;
+        try {
+          const values = {
+            classId: $("targetClass").value, alertLevel: selectedAlertLevel(),
+            ttsSpeed: Number($("ttsSpeed").value), displayDurationSec: Number($("displayDuration").value), ttsVolume: 1,
+            quietAcknowledged: Boolean(state.pendingQuietPeriod),
+          };
+          let requestBody;
+          if (isVoiceMode()) {
+            if (!state.voiceBlob) throw new Error("请先录制一段语音。");
+            const form = new FormData();
+            Object.entries(values).forEach(([key, value]) => form.append(key, String(value)));
+            form.append("audio", state.voiceBlob, "voice.wav");
+            requestBody = form;
+          } else requestBody = JSON.stringify({ ...values, text: $("shoutText").value });
+          const result = await api("/api/shouts", { method: "POST", body: requestBody });
+          $("confirmDialog").close();
+          state.pendingQuietPeriod = null;
+          state.selectedShoutId = result.id;
+          state.selectedShoutClassId = $("targetClass").value;
+          state.selectedShoutLevel = selectedAlertLevel();
+          setDelivery(result.status, result.detail || "消息已经进入教室实时通道。", result.status === "sent" ? "等待教室确认" : statusLabels[result.status]);
+          if (navigator.vibrate) navigator.vibrate(60);
+          $("shoutText").value = "";
+          $("charCount").textContent = "0";
+          if (isVoiceMode()) setVoiceBlob(null);
+          state.durationManuallySet = false;
+          updateLevelPresentation(true);
+          await Promise.all([loadHistory(), loadRecent()]);
+          if (result.status === "sent") pollDelivery(0);
+        } catch (error) {
+          if (error.data?.code === "quiet_confirmation_required") {
+            state.pendingQuietPeriod = error.data.quietPeriod;
+            showSendConfirmation(error.data.quietPeriod);
+          } else toast(error.message);
+        } finally { button.disabled = false; }
+      }
+
+      function showSendConfirmation(quietPeriod) {
+        const option = $("targetClass").selectedOptions[0];
+        const level = selectedAlertLevel();
+        const meta = levelMeta[level] || levelMeta.info;
+        state.selectedLevel = level;
+        state.pendingQuietPeriod = quietPeriod || null;
+        $("confirmTarget").textContent = `目标班级：${option?.textContent || ""}`;
+        $("confirmLevel").textContent = `通知级别：${meta.label}`;
+        $("confirmMode").textContent = `展示方式：${meta.mode}，${$("displayDuration").value} 秒`;
+        $("confirmText").textContent = isVoiceMode() ? `教师原声（${formatVoiceDuration(state.voiceDurationSec)} 秒）` : $("shoutText").value.trim();
+        const warning = $("quietWarning");
+        warning.classList.toggle("hidden", !quietPeriod);
+        if (quietPeriod) {
+          $("quietWarningTitle").textContent = `当前是禁言上课时间：${quietPeriod.name}`;
+          $("quietWarningDetail").textContent = meta.sound
+            ? `${quietPeriod.startTime}–${quietPeriod.endTime}。发送后教室会显示通知并播放声音，是否仍然发送？`
+            : `${quietPeriod.startTime}–${quietPeriod.endTime}。发送后教室只显示静音弹窗，是否仍然发送？`;
+        }
+        $("confirmTitle").textContent = quietPeriod ? "当前是禁言上课时间" : level === "urgent" ? "确认发送紧急通知" : "确认发送通知";
+        $("confirmSend").textContent = quietPeriod ? "仍然发送" : level === "urgent" ? "确认发送紧急通知" : "确认发送";
+        if (!$("confirmDialog").open) $("confirmDialog").showModal();
+      }
+
+      async function pollDelivery(attempt) {
+        clearTimeout(state.deliveryTimer);
+        if (!state.selectedShoutId || attempt > 20) return;
+        try {
+          const data = await api(`/api/history?classId=${encodeURIComponent(state.selectedShoutClassId)}&limit=20`);
+          const item = data.history.find(row => row.id === state.selectedShoutId);
+          if (item) {
+            setDelivery(item.status, item.status_detail || "", statusLabels[item.status]);
+            state.recent = data.history.slice(0, 5);
+            renderRecent();
+            if (["displayed", "failed", "offline"].includes(item.status)) return;
+          }
+        } catch { /* Keep the current status and retry. */ }
+        state.deliveryTimer = setTimeout(() => pollDelivery(attempt + 1), 1000);
+      }
+
+      function setDelivery(status, detail, title) {
+        const node = $("deliveryState");
+        node.className = `delivery ${status || ""}`;
+        node.replaceChildren(levelBadge(state.selectedShoutLevel || state.selectedLevel), el("strong", "", title || statusLabels[status] || "状态更新"), el("p", "hint", detail || ""));
+      }
+
+      function openPermissions(teacher) {
+        $("permissionTeacherId").value = teacher.id;
+        $("permissionTeacher").textContent = `${teacher.display_name}（${teacher.username}）`;
+        renderClassChecks("permissionClasses", teacher.classes.map(item => item.id));
+        $("permissionDialog").showModal();
+      }
+
+      function openPassword(teacher) {
+        $("passwordTeacherId").value = teacher.id;
+        $("passwordTeacher").textContent = `${teacher.display_name}（${teacher.username}）`;
+        $("newTeacherPassword").value = "";
+        $("passwordError").textContent = "";
+        $("passwordDialog").showModal();
+      }
+
+      function openRenameClass(item) {
+        $("renameClassId").value = item.id;
+        $("renameClassName").value = item.name;
+        $("renameClassError").textContent = "";
+        $("renameClassDialog").showModal();
+      }
+
+      function renderClassChecks(containerId, selected) {
+        const container = $(containerId);
+        if (!container) return;
+        container.replaceChildren();
+        const selectedSet = new Set(selected);
+        for (const item of state.classes.filter(row => Number(row.enabled) === 1)) {
+          const label = el("label", "check-item");
+          const input = document.createElement("input");
+          input.type = "checkbox"; input.value = item.id; input.checked = selectedSet.has(item.id);
+          label.append(input, document.createTextNode(item.name));
+          container.append(label);
+        }
+        if (!container.children.length) container.append(el("p", "muted", "请先创建班级。"));
+      }
+
+      async function toggleClass(item) {
+        try {
+          await api(`/api/classes/${encodeURIComponent(item.id)}`, { method: "PATCH", body: JSON.stringify({ enabled: Number(item.enabled) !== 1 }) });
+          toast(Number(item.enabled) === 1 ? "班级已停用" : "班级已启用");
+          await loadClasses();
+        } catch (error) { toast(error.message); }
+      }
+
+      async function generateEnrollment(item) {
+        try {
+          const data = await api(`/api/classes/${encodeURIComponent(item.id)}/enrollment-code`, { method: "POST" });
+          $("enrollClass").textContent = `目标班级：${data.className}`;
+          $("enrollCode").textContent = data.code;
+          $("enrollDialog").showModal();
+        } catch (error) { toast(error.message); }
+      }
+
+      async function toggleTeacher(teacher) {
+        try {
+          await api(`/api/teachers/${encodeURIComponent(teacher.id)}`, { method: "PATCH", body: JSON.stringify({ enabled: Number(teacher.enabled) !== 1 }) });
+          await loadTeachers();
+          toast(Number(teacher.enabled) === 1 ? "教师账号已停用" : "教师账号已启用");
+        } catch (error) { toast(error.message); }
+      }
+
+      async function toggleDevice(device) {
+        const enabling = Number(device.enabled) !== 1;
+        if (!enabling && !confirm(`确定停用 ${device.class_name} 的设备“${device.name}”吗？它会立即断开。`)) return;
+        try {
+          await api(`/api/devices/${encodeURIComponent(device.id)}`, { method: "PATCH", body: JSON.stringify({ enabled: enabling }) });
+          await loadDevices(); toast(enabling ? "设备已重新启用" : "设备已停用并断开");
+        } catch (error) { toast(error.message); }
+      }
+
+      function bindEvents() {
+        $("loginForm").addEventListener("submit", async event => {
+          event.preventDefault(); $("loginError").textContent = "";
+          try {
+            const result = await api("/api/auth/login", { method: "POST", body: JSON.stringify({ username: $("loginUsername").value, password: $("loginPassword").value }) });
+            await enterApp(result.user);
+          } catch (error) { $("loginError").textContent = error.message; }
+        });
+        $("bootstrapForm").addEventListener("submit", async event => {
+          event.preventDefault(); $("bootstrapError").textContent = "";
+          if ($("bootstrapPassword").value !== $("bootstrapPasswordConfirm").value) return $("bootstrapError").textContent = "两次输入的密码不一致。";
+          try {
+            await api("/api/bootstrap", { method: "POST", body: JSON.stringify({ bootstrapToken: $("bootstrapToken").value, password: $("bootstrapPassword").value }) });
+            $("bootstrapForm").classList.add("hidden"); $("loginForm").classList.remove("hidden"); $("loginUsername").value = "ICe"; toast("初始化完成，请登录");
+          } catch (error) { $("bootstrapError").textContent = error.message; }
+        });
+        $("logoutButton").addEventListener("click", async () => { try { await api("/api/auth/logout", { method: "POST" }); } finally { location.reload(); } });
+        $("mainNav").addEventListener("click", event => {
+          const button = event.target.closest("button[data-view]"); if (!button) return;
+          document.querySelectorAll(".nav button").forEach(node => node.classList.toggle("active", node === button));
+          document.querySelectorAll("main > .view").forEach(node => node.classList.add("hidden"));
+          $(`view-${button.dataset.view}`).classList.remove("hidden");
+          if (button.dataset.view === "history") loadHistory().catch(error => toast(error.message));
+          if (button.dataset.view === "quiet") loadQuietHours().catch(error => toast(error.message));
+        });
+        $("targetClass").addEventListener("change", () => { updatePresence(); loadRecent().catch(error => toast(error.message)); });
+        $("classGradeFilter").addEventListener("click", event => {
+          const button = event.target.closest("[data-grade-filter]");
+          if (!button) return;
+          state.classGradeFilter = button.dataset.gradeFilter || "all";
+          renderClasses();
+        });
+        $("textModeButton").addEventListener("click", () => setInputMode("text"));
+        $("voiceModeButton").addEventListener("click", () => setInputMode("voice"));
+        $("recordButton").addEventListener("pointerdown", event => { event.preventDefault(); startRecording(); });
+        ["pointerup", "pointercancel", "pointerleave"].forEach(name => $("recordButton").addEventListener(name, event => { event.preventDefault(); finishRecording(); }));
+        $("voicePreview").addEventListener("loadedmetadata", updateVoicePreviewStatus);
+        $("voicePreview").addEventListener("durationchange", updateVoicePreviewStatus);
+        $("voicePreview").addEventListener("ended", updateVoicePreviewStatus);
+        $("voicePreview").addEventListener("error", () => {
+          $("voicePreviewStatus").textContent = "浏览器无法解析这段录音，请重新录制。";
+        });
+        $("playVoiceButton").addEventListener("click", playVoicePreview);
+        $("stopVoiceButton").addEventListener("click", stopVoicePreview);
+        $("reRecordButton").addEventListener("click", () => { setVoiceBlob(null); startRecording(); });
+        $("clearVoiceButton").addEventListener("click", () => setVoiceBlob(null));
+        document.querySelectorAll('input[name="alertLevel"]').forEach(input => input.addEventListener("change", () => updateLevelPresentation()));
+        $("displayDuration").addEventListener("change", () => { state.durationManuallySet = true; });
+        $("historyClass").addEventListener("change", () => loadHistory().catch(error => toast(error.message)));
+        $("refreshHistory").addEventListener("click", () => loadHistory().catch(error => toast(error.message)));
+        $("exportHistory").addEventListener("click", () => { const classId = $("historyClass").value; location.href = `/api/history/export${classId ? `?classId=${encodeURIComponent(classId)}` : ""}`; });
+        $("addQuietPeriod").addEventListener("click", () => { $("quietScheduleList").append(createScheduleItem()); setQuietScheduleDirty(); });
+        $("quietScheduleList").addEventListener("input", () => setQuietScheduleDirty());
+        $("quietScheduleList").addEventListener("change", () => setQuietScheduleDirty());
+        $("saveQuietSchedule").addEventListener("click", saveQuietSchedule);
+        $("shoutText").addEventListener("input", () => $("charCount").textContent = String($("shoutText").value.length));
+        document.querySelectorAll(".phrase").forEach(button => button.addEventListener("click", () => { $("shoutText").value = button.textContent; $("shoutText").dispatchEvent(new Event("input")); $("shoutText").focus(); }));
+        $("shoutForm").addEventListener("submit", async event => {
+          event.preventDefault();
+          const level = selectedAlertLevel();
+          if (isVoiceMode() && !state.voiceBlob) return toast("请先录制一段语音。");
+          if (isVoiceMode() && level === "info") return toast("语音喊话请选择“重要”或“紧急”。");
+          if (!isVoiceMode() && !$("shoutText").value.trim()) return toast("请输入喊话内容。");
+          try {
+            const schedule = await loadQuietHours({ refreshEditor: false });
+            showSendConfirmation(schedule.activePeriod);
+          } catch (error) { toast(`无法确认禁言时间：${error.message}`); }
+        });
+        $("confirmSend").addEventListener("click", performSend);
+         $("addClassButton").addEventListener("click", () => { $("classForm").reset(); $("classError").textContent = ""; $("classDialog").showModal(); });
+         $("batchClassButton").addEventListener("click", () => { $("batchError").textContent = ""; $("batchDialog").showModal(); });
+         $("allClassesButton").addEventListener("click", async () => {
+           if (!confirm("将自动创建高一、高二、高三各 1 至 20 班，共 60 个班级。已经存在的班级会自动跳过，继续吗？")) return;
+           const button = $("allClassesButton");
+           button.disabled = true;
+           const originalText = button.textContent;
+           button.textContent = "正在创建…";
+           try {
+             let created = 0;
+             let skipped = 0;
+             for (const grade of ["高一", "高二", "高三"]) {
+               const result = await api("/api/classes/batch", { method: "POST", body: JSON.stringify({ grade, start: 1, end: 20 }) });
+               created += result.created.length;
+               skipped += result.skipped;
+             }
+             await loadClasses();
+             toast(`已准备高中 60 个班级：新建 ${created} 个，跳过 ${skipped} 个`);
+           } catch (error) {
+             toast(error.message);
+           } finally {
+             button.disabled = false;
+             button.textContent = originalText;
+           }
+         });
+         $("addTeacherButton").addEventListener("click", () => { $("teacherForm").reset(); $("teacherError").textContent = ""; renderClassChecks("newTeacherClasses", []); $("teacherDialog").showModal(); });
+        $("classForm").addEventListener("submit", async event => {
+          event.preventDefault(); $("classError").textContent = "";
+          try { await api("/api/classes", { method: "POST", body: JSON.stringify({ name: $("className").value }) }); $("classDialog").close(); await loadClasses(); toast("班级已创建"); }
+          catch (error) { $("classError").textContent = error.message; }
+        });
+        $("batchForm").addEventListener("submit", async event => {
+          event.preventDefault(); $("batchError").textContent = "";
+          try { const result = await api("/api/classes/batch", { method: "POST", body: JSON.stringify({ grade: $("batchGrade").value, start: Number($("batchStart").value), end: Number($("batchEnd").value) }) }); $("batchDialog").close(); await loadClasses(); toast(`已创建 ${result.created.length} 个班级`); }
+          catch (error) { $("batchError").textContent = error.message; }
+        });
+        $("renameClassForm").addEventListener("submit", async event => {
+          event.preventDefault(); $("renameClassError").textContent = "";
+          try { await api(`/api/classes/${encodeURIComponent($("renameClassId").value)}`, { method: "PATCH", body: JSON.stringify({ name: $("renameClassName").value }) }); $("renameClassDialog").close(); await loadClasses(); toast("班级名称已修改"); }
+          catch (error) { $("renameClassError").textContent = error.message; }
+        });
+        $("teacherForm").addEventListener("submit", async event => {
+          event.preventDefault(); $("teacherError").textContent = "";
+          try {
+            await api("/api/teachers", { method: "POST", body: JSON.stringify({ username: $("teacherUsername").value, displayName: $("teacherDisplayName").value, password: $("teacherPassword").value, classIds: checkedValues("newTeacherClasses") }) });
+            $("teacherDialog").close(); await loadTeachers(); toast("教师账号已创建");
+          } catch (error) { $("teacherError").textContent = error.message; }
+        });
+        $("permissionForm").addEventListener("submit", async event => {
+          event.preventDefault();
+          try { await api(`/api/teachers/${encodeURIComponent($("permissionTeacherId").value)}/classes`, { method: "PUT", body: JSON.stringify({ classIds: checkedValues("permissionClasses") }) }); $("permissionDialog").close(); await loadTeachers(); toast("班级权限已保存"); }
+          catch (error) { toast(error.message); }
+        });
+        $("passwordForm").addEventListener("submit", async event => {
+          event.preventDefault(); $("passwordError").textContent = "";
+          try { await api(`/api/teachers/${encodeURIComponent($("passwordTeacherId").value)}/password`, { method: "PUT", body: JSON.stringify({ password: $("newTeacherPassword").value }) }); $("passwordDialog").close(); toast("密码已重置，原登录会话已退出"); }
+          catch (error) { $("passwordError").textContent = error.message; }
+        });
+        $("ownPasswordForm").addEventListener("submit", async event => {
+          event.preventDefault(); $("ownPasswordError").textContent = "";
+          if ($("ownNewPassword").value !== $("ownNewPasswordConfirm").value) return $("ownPasswordError").textContent = "两次输入的新密码不一致。";
+          try { await api("/api/auth/password", { method: "PUT", body: JSON.stringify({ currentPassword: $("currentPassword").value, newPassword: $("ownNewPassword").value }) }); location.reload(); }
+          catch (error) { $("ownPasswordError").textContent = error.message; }
+        });
+        $("refreshDevices").addEventListener("click", () => loadDevices().catch(error => toast(error.message)));
+        document.addEventListener("click", event => { const close = event.target.closest("[data-close]"); if (close) close.closest("dialog")?.close(); });
+      }
+
+      function checkedValues(containerId) { return [...$(containerId).querySelectorAll("input:checked")].map(input => input.value); }
+      function createTable(headers) { const table = document.createElement("table"); const head = table.createTHead().insertRow(); headers.forEach(value => { const th = document.createElement("th"); th.scope = "col"; th.textContent = value; head.append(th); }); table.createTBody(); return table; }
+      function wrapTable(table) { const wrap = el("div", "table-wrap"); wrap.append(table); return wrap; }
+      function addCell(row, value) { const cell = row.insertCell(); cell.textContent = value ?? ""; return cell; }
+      function renderEmpty(container, message) { container.replaceChildren(el("div", "empty", message)); }
+      function statusBadge(status, label) { return el("span", `status ${status || ""}`, label || statusLabels[status] || status); }
+      function levelBadge(level) { const meta = levelMeta[level] || levelMeta.warning; return el("span", `level-badge ${meta.className}`, meta.label); }
+      function actionButton(label, handler) { const button = el("button", "btn", label); button.type = "button"; button.addEventListener("click", handler); return button; }
+      function el(tag, className, text) { const node = document.createElement(tag); if (className) node.className = className; if (text !== undefined) node.textContent = text; return node; }
+      function formatTime(value, short = false) { if (!value) return "-"; return new Intl.DateTimeFormat("zh-CN", short ? { hour: "2-digit", minute: "2-digit" } : { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(new Date(Number(value))); }
+      function toast(message) { const node = el("div", "toast", message); $("toastRegion").append(node); setTimeout(() => node.remove(), 3500); }
+
+      bindEvents();
+      updateLevelPresentation(true);
+      start();
+    })();
+  </script>
+</body>
+</html>

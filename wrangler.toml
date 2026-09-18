@@ -1,0 +1,30 @@
+﻿name = "cloud-remote-shouter"
+main = "cloud/src/index.ts"
+compatibility_date = "2026-09-01"
+
+[assets]
+directory = "./web_controller"
+binding = "ASSETS"
+run_worker_first = ["/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "cloud-remote-shouter"
+database_id = "26ad21ac-a07b-4c05-a8a3-f5b920472b46"
+migrations_dir = "cloud/migrations"
+
+[[durable_objects.bindings]]
+name = "CLASS_ROOMS"
+class_name = "ClassRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ClassRoom"]
+
+[vars]
+APP_NAME = "ICeCream Shouter"
+SESSION_DAYS = "14"
+HISTORY_DAYS = "0"
+
+[triggers]
+crons = ["0 19 * * *"]

@@ -1,0 +1,9 @@
+{
+  "Endpoint": "https://cloud-remote-shouter.example.workers.dev",
+  "DeviceId": "GENERATED_AFTER_ENROLLMENT",
+  "DeviceToken": "PROTECTED_BY_WINDOWS_AFTER_ENROLLMENT",
+  "ClassId": "GENERATED_AFTER_ENROLLMENT",
+  "ClassName": "高一（1）班",
+  "DeviceName": "高一（1）班教室电脑",
+  "StartWithWindows": true
+}
